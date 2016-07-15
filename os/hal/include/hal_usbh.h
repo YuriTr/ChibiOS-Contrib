@@ -37,6 +37,10 @@
 #define HAL_USBH_USE_UVC FALSE
 #endif
 
+#ifndef HAL_USBH_USE_ACCESSORY
+#define HAL_USBH_USE_ACCESSORY FALSE
+#endif
+
 #if (HAL_USE_USBH == TRUE) || defined(__DOXYGEN__)
 
 #include "osal.h"

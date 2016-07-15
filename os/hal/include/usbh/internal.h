@@ -26,6 +26,9 @@
 /* These declarations are not part of the public API.                        */
 /*===========================================================================*/
 
+#if HAL_USBH_USE_ACCESSORY
+extern const usbh_classdriverinfo_t usbhAccessClassDriverInfo;
+#endif
 #if HAL_USBH_USE_FTDI
 extern const usbh_classdriverinfo_t usbhftdiClassDriverInfo;
 #endif

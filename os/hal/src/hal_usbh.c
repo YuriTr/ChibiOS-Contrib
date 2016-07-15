@@ -1275,7 +1275,10 @@ static const usbh_classdriverinfo_t *usbh_classdrivers_lookup[] = {
 	&usbhmsdClassDriverInfo,
 #endif
 #if HAL_USBH_USE_HUB
-	&usbhhubClassDriverInfo
+	&usbhhubClassDriverInfo,
+#endif
+#if HAL_USBH_USE_ACCESSORY
+	&usbhAccessClassDriverInfo
 #endif
 };
 
