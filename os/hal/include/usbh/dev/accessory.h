@@ -10,9 +10,9 @@
 #define USBH_ACCESSORY_PID        0x2d00
 #define USBH_ACCESSORY_ADB_PID    0x2d01
 
-//! Таймер для отсчета таймаута переключения в режим Accessory
+//! The timer for the timeout switch to Accessory mode
 extern virtual_timer_t vt_aoa_switch_tout;
-//! Источник событий таймаута переключения в Accessory режим
+//! Event-Source for switching in to Accessory mode timeout.
 extern event_source_t aoa_switch_tout_evt_src;
 
 typedef enum {

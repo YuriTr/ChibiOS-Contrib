@@ -45,9 +45,9 @@
 #define uerr(f, ...)   do {} while(0)
 #endif
 
-//! Таймер для отсчета таймаута переключения в режим Accessory
+//! The timer for the timeout switch to Accessory mode
 virtual_timer_t vt_aoa_switch_tout;
-//! Источник событий таймаута переключения в Accessory режим
+//! Event-Source for switching in to Accessory mode timeout.
 EVENTSOURCE_DECL(aoa_switch_tout_evt_src);
 
 #define ACCESSORY_CTRL_GET_PROTOCOL   0x33
@@ -81,12 +81,12 @@ const usbh_classdriverinfo_t usbhAccessClassDriverInfo = {
 };
 
 /**
- * Call back функция для таймера 
- * Генерирует событие для источника, указатель на который передан в качестве параметра. 
+ * Call back function for VT
+ * It generates an event for the event-source, a pointer to which is passed as a parameter.
  *  
  * @author Yuri (27.06.2016)
  * 
- * @param p указатель на event_source_t 
+ * @param p pointer to event_source_t 
  */
 static void vtcbSetEvent(void *p) {
   if (p) {
