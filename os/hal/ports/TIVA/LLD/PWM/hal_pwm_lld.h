@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2014..2016 Marco Veeneman
+    Copyright (C) 2014..2017 Marco Veeneman
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 */
 
 /**
- * @file    TIVA/LLD/pwm_lld.c
+ * @file    PWM/hal_pwm_lld.c
  * @brief   TM4C123x/TM4C129x PWM subsystem low level driver header.
  *
  * @addtogroup PWM
@@ -304,7 +304,7 @@ struct PWMDriver {
   /**
    * @brief Pointer to the PWMx registers block.
    */
-  PWM_TypeDef               *pwm;
+  uint32_t                  pwm;
 };
 
 /*===========================================================================*/
@@ -328,10 +328,10 @@ struct PWMDriver {
  * @notapi
  */
 #define pwm_lld_change_period(pwmp, period)                                  \
-  ((pwmp)->pwm->PWM[0].LOAD = (uint16_t)((period) - 1));                     \
-  ((pwmp)->pwm->PWM[1].LOAD = (uint16_t)((period) - 1));                     \
-  ((pwmp)->pwm->PWM[2].LOAD = (uint16_t)((period) - 1));                     \
-  ((pwmp)->pwm->PWM[3].LOAD = (uint16_t)((period) - 1))
+  HWREG((pwmp)->pwm + PWM_O_0_LOAD) = (uint16_t)((period) - 1);             \
+  HWREG((pwmp)->pwm + PWM_O_1_LOAD) = (uint16_t)((period) - 1);             \
+  HWREG((pwmp)->pwm + PWM_O_2_LOAD) = (uint16_t)((period) - 1);             \
+  HWREG((pwmp)->pwm + PWM_O_3_LOAD) = (uint16_t)((period) - 1)
 
 /*===========================================================================*/
 /* External declarations.                                                    */

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2014..2016 Marco Veeneman
+    Copyright (C) 2014..2017 Marco Veeneman
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 */
 
 /**
- * @file    TIVA/LLD/serial_lld.c
+ * @file    UART/hal_serial_lld.c
  * @brief   Tiva low level serial driver code.
  *
  * @addtogroup SERIAL
@@ -34,58 +34,42 @@
 /* Driver exported variables.                                                */
 /*===========================================================================*/
 
-/**
- * @brief UART0 serial driver identifier.
- */
+/** @brief UART0 serial driver identifier.*/
 #if TIVA_SERIAL_USE_UART0 || defined(__DOXYGEN__)
 SerialDriver SD1;
 #endif
 
-/**
- * @brief UART1 serial driver identifier.
- */
+/** @brief UART1 serial driver identifier.*/
 #if TIVA_SERIAL_USE_UART1 || defined(__DOXYGEN__)
 SerialDriver SD2;
 #endif
 
-/**
- * @brief UART2 serial driver identifier.
- */
+/** @brief UART2 serial driver identifier.*/
 #if TIVA_SERIAL_USE_UART2 || defined(__DOXYGEN__)
 SerialDriver SD3;
 #endif
 
-/**
- * @brief UART3 serial driver identifier.
- */
+/** @brief UART3 serial driver identifier.*/
 #if TIVA_SERIAL_USE_UART3 || defined(__DOXYGEN__)
 SerialDriver SD4;
 #endif
 
-/**
- * @brief UART4 serial driver identifier.
- */
+/** @brief UART4 serial driver identifier.*/
 #if TIVA_SERIAL_USE_UART4 || defined(__DOXYGEN__)
 SerialDriver SD5;
 #endif
 
-/**
- * @brief UART5 serial driver identifier.
- */
+/** @brief UART5 serial driver identifier.*/
 #if TIVA_SERIAL_USE_UART5 || defined(__DOXYGEN__)
 SerialDriver SD6;
 #endif
 
-/**
- * @brief UART6 serial driver identifier.
- */
+/** @brief UART6 serial driver identifier.*/
 #if TIVA_SERIAL_USE_UART6 || defined(__DOXYGEN__)
 SerialDriver SD7;
 #endif
 
-/**
- * @brief UART7 serial driver identifier.
- */
+/** @brief UART7 serial driver identifier.*/
 #if TIVA_SERIAL_USE_UART7 || defined(__DOXYGEN__)
 SerialDriver SD8;
 #endif
@@ -94,15 +78,79 @@ SerialDriver SD8;
 /* Driver local variables.                                                   */
 /*===========================================================================*/
 
-/**
- * @brief Driver default configuration.
- */
+/** @brief Driver default configuration.*/
 static const SerialConfig sd_default_config =
 {
   SERIAL_DEFAULT_BITRATE,
-  TIVA_LCRH_FEN | TIVA_LCRH_WLEN_8,
-  TIVA_IFLS_TXIFLSEL_1_8_F | TIVA_IFLS_RXIFLSEL_1_8_E
+  0,
+  UART_LCRH_FEN | UART_LCRH_WLEN_8,
+  UART_IFLS_TX4_8 | UART_IFLS_RX7_8,
+  UART_CC_CS_SYSCLK
 };
+
+#if TIVA_SERIAL_USE_UART0 || defined(__DOXYGEN__)
+/** @brief Input buffer for SD1.*/
+static uint8_t sd_in_buf1[TIVA_SERIAL_UART0_IN_BUF_SIZE];
+
+/** @brief Output buffer for SD1.*/
+static uint8_t sd_out_buf1[TIVA_SERIAL_UART0_OUT_BUF_SIZE];
+#endif
+
+#if TIVA_SERIAL_USE_UART1 || defined(__DOXYGEN__)
+/** @brief Input buffer for SD2.*/
+static uint8_t sd_in_buf2[TIVA_SERIAL_UART1_IN_BUF_SIZE];
+
+/** @brief Output buffer for SD2.*/
+static uint8_t sd_out_buf2[TIVA_SERIAL_UART1_OUT_BUF_SIZE];
+#endif
+
+#if TIVA_SERIAL_USE_UART2 || defined(__DOXYGEN__)
+/** @brief Input buffer for SD3.*/
+static uint8_t sd_in_buf3[TIVA_SERIAL_UART2_IN_BUF_SIZE];
+
+/** @brief Output buffer for SD3.*/
+static uint8_t sd_out_buf3[TIVA_SERIAL_UART2_OUT_BUF_SIZE];
+#endif
+
+#if TIVA_SERIAL_USE_UART3 || defined(__DOXYGEN__)
+/** @brief Input buffer for SD4.*/
+static uint8_t sd_in_buf4[TIVA_SERIAL_UART3_IN_BUF_SIZE];
+
+/** @brief Output buffer for SD4.*/
+static uint8_t sd_out_buf4[TIVA_SERIAL_UART3_OUT_BUF_SIZE];
+#endif
+
+#if TIVA_SERIAL_USE_UART4 || defined(__DOXYGEN__)
+/** @brief Input buffer for SD5.*/
+static uint8_t sd_in_buf5[TIVA_SERIAL_UART4_IN_BUF_SIZE];
+
+/** @brief Output buffer for SD5.*/
+static uint8_t sd_out_buf5[TIVA_SERIAL_UART4_OUT_BUF_SIZE];
+#endif
+
+#if TIVA_SERIAL_USE_UART5 || defined(__DOXYGEN__)
+/** @brief Input buffer for SD6.*/
+static uint8_t sd_in_buf6[TIVA_SERIAL_UART5_IN_BUF_SIZE];
+
+/** @brief Output buffer for SD6.*/
+static uint8_t sd_out_buf6[TIVA_SERIAL_UART5_OUT_BUF_SIZE];
+#endif
+
+#if TIVA_SERIAL_USE_UART6 || defined(__DOXYGEN__)
+/** @brief Input buffer for SD7.*/
+static uint8_t sd_in_buf7[TIVA_SERIAL_UART6_IN_BUF_SIZE];
+
+/** @brief Output buffer for SD7.*/
+static uint8_t sd_out_buf7[TIVA_SERIAL_UART6_OUT_BUF_SIZE];
+#endif
+
+#if TIVA_SERIAL_USE_UART7 || defined(__DOXYGEN__)
+/** @brief Input buffer for SD8.*/
+static uint8_t sd_in_buf8[TIVA_SERIAL_UART7_IN_BUF_SIZE];
+
+/** @brief Output buffer for SD8.*/
+static uint8_t sd_out_buf8[TIVA_SERIAL_UART7_OUT_BUF_SIZE];
+#endif
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
@@ -111,23 +159,55 @@ static const SerialConfig sd_default_config =
 /**
  * @brief   UART initialization.
  *
- * @param[in] sdp       communication channel associated to the UART
+ * @param[in] sdp       pointer to a @p SerialDriver object
  * @param[in] config    the architecture-dependent serial driver configuration
  */
 static void uart_init(SerialDriver *sdp, const SerialConfig *config)
 {
-  UART_TypeDef *u = sdp->uart;
-  uint32_t div;  /* baud rate divisor */
+  uint32_t u = sdp->uart;
+  uint32_t brd;
+  uint32_t speed = config->speed;
+  uint32_t clock_source;
 
-  /* disable the UART before any of the control registers are reprogrammed */
-  u->CTL &= ~TIVA_CTL_UARTEN;
-  div = (((TIVA_SYSCLK * 8) / config->sc_speed) + 1) / 2;
-  u->IBRD = div / 64;   /* integer portion of the baud rate divisor */
-  u->FBRD = div % 64;   /* fractional portion of the baud rate divisor */
-  u->LCRH = config->sc_lcrh;   /* set data format */
-  u->IFLS = config->sc_ifls;
-  u->CTL |= TIVA_CTL_TXE | TIVA_CTL_RXE | TIVA_CTL_UARTEN;
-  u->IM |= TIVA_IM_RXIM | TIVA_IM_TXIM | TIVA_IM_RTIM;   /* interrupts enable */
+  if (config->ctl & UART_CTL_HSE) {
+    /* High speed mode is enabled, half the baud rate to compensate
+     * for high speed mode.*/
+    speed = (speed + 1) / 2;
+  }
+
+  if ((config->cc & UART_CC_CS_SYSCLK) == UART_CC_CS_SYSCLK) {
+    /* UART is clocked using the SYSCLK.*/
+    clock_source = TIVA_SYSCLK * 8;
+  }
+  else {
+    /* UART is clocked using the PIOSC.*/
+    clock_source = 16000000 * 8;
+  }
+
+  /* Calculate the baud rate divisor */
+  brd = ((clock_source / speed) + 1) / 2;
+
+  /* Disable UART.*/
+  HWREG(u + UART_O_CTL) &= ~UART_CTL_UARTEN;
+
+  /* Set baud rate.*/
+  HWREG(u + UART_O_IBRD) = brd / 64;
+  HWREG(u + UART_O_FBRD) = brd % 64;
+
+  /* Line control/*/
+  HWREG(u + UART_O_LCRH) = config->lcrh;
+
+  /* Select clock source.*/
+  HWREG(u + UART_O_CC) = config->cc & UART_CC_CS_M;
+
+  /* FIFO configuration.*/
+  HWREG(u + UART_O_IFLS) = config->ifls & (UART_IFLS_RX_M | UART_IFLS_TX_M);
+
+  /* Note that some bits are enforced.*/
+  HWREG(u + UART_O_CTL)  = config->ctl | UART_CTL_RXE | UART_CTL_TXE | UART_CTL_UARTEN;
+
+  /* Enable interrupts.*/
+  HWREG(u + UART_O_IM)   = UART_IM_RXIM | UART_IM_TXIM | UART_IM_RTIM;
 }
 
 /**
@@ -135,9 +215,9 @@ static void uart_init(SerialDriver *sdp, const SerialConfig *config)
  *
  * @param[in] u         pointer to an UART I/O block
  */
-static void uart_deinit(UART_TypeDef *u)
+static void uart_deinit(uint32_t u)
 {
-  u->CTL &= ~TIVA_CTL_UARTEN;
+  HWREG(u + UART_O_CTL) &= ~UART_CTL_UARTEN;
 }
 
 /**
@@ -150,13 +230,13 @@ static void set_error(SerialDriver *sdp, uint16_t err)
 {
   eventflags_t sts = 0;
   
-  if (err & TIVA_MIS_FEMIS)
+  if (err & UART_MIS_FEMIS)
     sts |= SD_FRAMING_ERROR;
-  if (err & TIVA_MIS_PEMIS)
+  if (err & UART_MIS_PEMIS)
     sts |= SD_PARITY_ERROR;
-  if (err & TIVA_MIS_BEMIS)
+  if (err & UART_MIS_BEMIS)
     sts |= SD_BREAK_DETECTED;
-  if (err & TIVA_MIS_OEMIS)
+  if (err & UART_MIS_OEMIS)
     sts |= SD_OVERRUN_ERROR;
   osalSysLockFromISR();
   chnAddFlagsI(sdp, sts);
@@ -174,64 +254,67 @@ static void set_error(SerialDriver *sdp, uint16_t err)
  */
 static void serial_serve_interrupt(SerialDriver *sdp) 
 {
-  UART_TypeDef *u = sdp->uart;
-  uint16_t mis = u->MIS;
+  uint32_t u = sdp->uart;
+  uint16_t mis = HWREG(u + UART_O_MIS);
   
-  u->ICR = mis;		/* clear interrupts */
+  HWREG(u + UART_O_ICR) = mis;		/* clear interrupts */
 
-  if (mis & (TIVA_MIS_FEMIS | TIVA_MIS_PEMIS | TIVA_MIS_BEMIS | TIVA_MIS_OEMIS)) {
+  if (mis & (UART_MIS_FEMIS | UART_MIS_PEMIS | UART_MIS_BEMIS | UART_MIS_OEMIS)) {
     set_error(sdp, mis);
   }
 
-  if ((mis & TIVA_MIS_RXMIS) || (mis &  TIVA_MIS_RTMIS)) {
+  if ((mis & UART_MIS_RXMIS) || (mis &  UART_MIS_RTMIS)) {
     osalSysLockFromISR();
     if (iqIsEmptyI(&sdp->iqueue)) {
       chnAddFlagsI(sdp, CHN_INPUT_AVAILABLE);
     }
     osalSysUnlockFromISR();
-    while ((u->FR & TIVA_FR_RXFE) == 0) {
+    while ((HWREG(u + UART_O_FR) & UART_FR_RXFE) == 0) {
       osalSysLockFromISR();
-      if (iqPutI(&sdp->iqueue, u->DR) < Q_OK) {
-        chnAddFlagsI(sdp, SD_OVERRUN_ERROR);
+      if (iqPutI(&sdp->iqueue, HWREG(u + UART_O_DR)) < Q_OK) {
+        chnAddFlagsI(sdp, SD_QUEUE_FULL_ERROR);
       }
       osalSysUnlockFromISR();
     }
   }
 
-  if (mis & TIVA_MIS_TXMIS) {
-    while ((u->FR & TIVA_FR_TXFF) == 0) {
+  if (mis & UART_MIS_TXMIS) {
+    while ((HWREG(u + UART_O_FR) & UART_FR_TXFF) == 0) {
       msg_t b;
       osalSysLockFromISR();
       b = oqGetI(&sdp->oqueue);
       osalSysUnlockFromISR();
       if (b < Q_OK) {
-        u->IM &= ~TIVA_IM_TXIM;
+        HWREG(u + UART_O_IM) &= ~UART_IM_TXIM;
         osalSysLockFromISR();
         chnAddFlagsI(sdp, CHN_OUTPUT_EMPTY);
         osalSysUnlockFromISR();
         break;
       }
-      u->DR = b;
+      HWREG(u + UART_O_DR) = b;
     }
   }
+
+  /* TODO: Physical transmission end. */
 }
 
 /**
- * @brief
+ * @brief   Fill the hardware FIFO of a UART.
  */
 static void fifo_load(SerialDriver *sdp)
 {
-  UART_TypeDef *u = sdp->uart;
+  uint32_t u = sdp->uart;
 
-  while ((u->FR & TIVA_FR_TXFF) == 0) {
+  while ((HWREG(u + UART_O_FR) & UART_FR_TXFF) == 0) {
     msg_t b = oqGetI(&sdp->oqueue);
     if (b < Q_OK) {
       chnAddFlagsI(sdp, CHN_OUTPUT_EMPTY);
       return;
     }
-    u->DR = b;
+    HWREG(u + UART_O_DR) = b;
   }
-  u->IM |= TIVA_IM_TXIM;   /* transmit interrupt enable */
+
+  HWREG(u + UART_O_IM) |= UART_IM_TXIM;   /* transmit interrupt enable */
 }
 
 /**
@@ -326,13 +409,15 @@ static void notify8(io_queue_t *qp)
 /* Driver interrupt handlers.                                                */
 /*===========================================================================*/
 
-/**
- * @brief   UART0 IRQ handler.
- */
 #if TIVA_SERIAL_USE_UART0 || defined(__DOXYGEN__)
 #if !defined(TIVA_UART0_HANDLER)
 #error "TIVA_UART0_HANDLER not defined"
 #endif
+/**
+ * @brief   UART0 interrupt handler.
+ *
+ * @isr
+ */
 CH_IRQ_HANDLER(TIVA_UART0_HANDLER)
 {
   CH_IRQ_PROLOGUE();
@@ -343,10 +428,16 @@ CH_IRQ_HANDLER(TIVA_UART0_HANDLER)
 }
 #endif
 
-/**
- * @brief   UART1 IRQ handler.
- */
+
 #if TIVA_SERIAL_USE_UART1 || defined(__DOXYGEN__)
+#if !defined(TIVA_UART1_HANDLER)
+#error "TIVA_UART1_HANDLER not defined"
+#endif
+/**
+ * @brief   UART1 interrupt handler.
+ *
+ * @isr
+ */
 CH_IRQ_HANDLER(TIVA_UART1_HANDLER)
 {
   CH_IRQ_PROLOGUE();
@@ -357,10 +448,15 @@ CH_IRQ_HANDLER(TIVA_UART1_HANDLER)
 }
 #endif
 
-/**
- * @brief   UART2 IRQ handler.
- */
 #if TIVA_SERIAL_USE_UART2 || defined(__DOXYGEN__)
+#if !defined(TIVA_UART2_HANDLER)
+#error "TIVA_UART2_HANDLER not defined"
+#endif
+/**
+ * @brief   UART2 interrupt handler.
+ *
+ * @isr
+ */
 CH_IRQ_HANDLER(TIVA_UART2_HANDLER)
 {
   CH_IRQ_PROLOGUE();
@@ -371,10 +467,15 @@ CH_IRQ_HANDLER(TIVA_UART2_HANDLER)
 }
 #endif
 
-/**
- * @brief   UART3 IRQ handler.
- */
 #if TIVA_SERIAL_USE_UART3 || defined(__DOXYGEN__)
+#if !defined(TIVA_UART3_HANDLER)
+#error "TIVA_UART3_HANDLER not defined"
+#endif
+/**
+ * @brief   UART3 interrupt handler.
+ *
+ * @isr
+ */
 CH_IRQ_HANDLER(TIVA_UART3_HANDLER)
 {
   CH_IRQ_PROLOGUE();
@@ -385,10 +486,15 @@ CH_IRQ_HANDLER(TIVA_UART3_HANDLER)
 }
 #endif
 
-/**
- * @brief   UART4 IRQ handler.
- */
 #if TIVA_SERIAL_USE_UART4 || defined(__DOXYGEN__)
+#if !defined(TIVA_UART4_HANDLER)
+#error "TIVA_UART4_HANDLER not defined"
+#endif
+/**
+ * @brief   UART4 interrupt handler.
+ *
+ * @isr
+ */
 CH_IRQ_HANDLER(TIVA_UART4_HANDLER)
 {
   CH_IRQ_PROLOGUE();
@@ -399,10 +505,15 @@ CH_IRQ_HANDLER(TIVA_UART4_HANDLER)
 }
 #endif
 
-/**
- * @brief   UART5 IRQ handler.
- */
 #if TIVA_SERIAL_USE_UART5 || defined(__DOXYGEN__)
+#if !defined(TIVA_UART5_HANDLER)
+#error "TIVA_UART5_HANDLER not defined"
+#endif
+/**
+ * @brief   UART5 interrupt handler.
+ *
+ * @isr
+ */
 CH_IRQ_HANDLER(TIVA_UART5_HANDLER)
 {
   CH_IRQ_PROLOGUE();
@@ -413,10 +524,15 @@ CH_IRQ_HANDLER(TIVA_UART5_HANDLER)
 }
 #endif
 
-/**
- * @brief   UART6 IRQ handler.
- */
 #if TIVA_SERIAL_USE_UART6 || defined(__DOXYGEN__)
+#if !defined(TIVA_UART6_HANDLER)
+#error "TIVA_UART6_HANDLER not defined"
+#endif
+/**
+ * @brief   UART6 interrupt handler.
+ *
+ * @isr
+ */
 CH_IRQ_HANDLER(TIVA_UART6_HANDLER)
 {
   CH_IRQ_PROLOGUE();
@@ -427,10 +543,15 @@ CH_IRQ_HANDLER(TIVA_UART6_HANDLER)
 }
 #endif
 
-/**
- * @brief   UART7 IRQ handler.
- */
 #if TIVA_SERIAL_USE_UART7 || defined(__DOXYGEN__)
+#if !defined(TIVA_UART7_HANDLER)
+#error "TIVA_UART7_HANDLER not defined"
+#endif
+/**
+ * @brief   UART7 interrupt handler.
+ *
+ * @isr
+ */
 CH_IRQ_HANDLER(TIVA_UART7_HANDLER)
 {
   CH_IRQ_PROLOGUE();
@@ -447,47 +568,65 @@ CH_IRQ_HANDLER(TIVA_UART7_HANDLER)
 
 /**
  * @brief   Low level serial driver initialization.
+ *
+ * @notapi
  */
 void sd_lld_init(void)
 {
 #if TIVA_SERIAL_USE_UART0
-  sdObjectInit(&SD1, NULL, notify1);
-  SD1.uart = UART0;
+  sdObjectInit(&SD1);
+  iqObjectInit(&SD1.iqueue, sd_in_buf1, sizeof sd_in_buf1, NULL, &SD1);
+  oqObjectInit(&SD1.oqueue, sd_out_buf1, sizeof sd_out_buf1, notify1, &SD1);
+  SD1.uart = UART0_BASE;
 #endif
 
 #if TIVA_SERIAL_USE_UART1
-  sdObjectInit(&SD2, NULL, notify2);
-  SD2.uart = UART1;
+  sdObjectInit(&SD2);
+  iqObjectInit(&SD2.iqueue, sd_in_buf2, sizeof sd_in_buf2, NULL, &SD2);
+  oqObjectInit(&SD2.oqueue, sd_out_buf2, sizeof sd_out_buf2, notify2, &SD2);
+  SD2.uart = UART1_BASE;
 #endif
 
 #if TIVA_SERIAL_USE_UART2
-  sdObjectInit(&SD3, NULL, notify3);
-  SD3.uart = UART2;
+  sdObjectInit(&SD3);
+  iqObjectInit(&SD3.iqueue, sd_in_buf3, sizeof sd_in_buf3, NULL, &SD3);
+  oqObjectInit(&SD3.oqueue, sd_out_buf3, sizeof sd_out_buf3, notify3, &SD3);
+  SD3.uart = UART2_BASE;
 #endif
 
 #if TIVA_SERIAL_USE_UART3
-  sdObjectInit(&SD4, NULL, notify4);
-  SD4.uart = UART3;
+  sdObjectInit(&SD4);
+  iqObjectInit(&SD4.iqueue, sd_in_buf4, sizeof sd_in_buf4, NULL, &SD4);
+  oqObjectInit(&SD4.oqueue, sd_out_buf4, sizeof sd_out_buf4, notify4, &SD4);
+  SD4.uart = UART3_BASE;
 #endif
 
 #if TIVA_SERIAL_USE_UART4
-  sdObjectInit(&SD5, NULL, notify5);
-  SD5.uart = UART4;
+  sdObjectInit(&SD5);
+  iqObjectInit(&SD5.iqueue, sd_in_buf5, sizeof sd_in_buf5, NULL, &SD5);
+  oqObjectInit(&SD5.oqueue, sd_out_buf5, sizeof sd_out_buf5, notify5, &SD5);
+  SD5.uart = UART4_BASE;
 #endif
 
 #if TIVA_SERIAL_USE_UART5
-  sdObjectInit(&SD6, NULL, notify6);
-  SD6.uart = UART5;
+  sdObjectInit(&SD6);
+  iqObjectInit(&SD6.iqueue, sd_in_buf6, sizeof sd_in_buf6, NULL, &SD6);
+  oqObjectInit(&SD6.oqueue, sd_out_buf6, sizeof sd_out_buf6, notify6, &SD6);
+  SD6.uart = UART5_BASE;
 #endif
 
 #if TIVA_SERIAL_USE_UART6
-  sdObjectInit(&SD7, NULL, notify7);
-  SD7.uart = UART6;
+  sdObjectInit(&SD7);
+  iqObjectInit(&SD7.iqueue, sd_in_buf7, sizeof sd_in_buf7, NULL, &SD7);
+  oqObjectInit(&SD7.oqueue, sd_out_buf7, sizeof sd_out_buf7, notify7, &SD7);
+  SD7.uart = UART6_BASE;
 #endif
 
 #if TIVA_SERIAL_USE_UART7
-  sdObjectInit(&SD8, NULL, notify8);
-  SD8.uart = UART7;
+  sdObjectInit(&SD8);
+  iqObjectInit(&SD8.iqueue, sd_in_buf8, sizeof sd_in_buf8, NULL, &SD8);
+  oqObjectInit(&SD8.oqueue, sd_out_buf8, sizeof sd_out_buf8, notify8, &SD8);
+  SD8.uart = UART7_BASE;
 #endif
 }
 
@@ -498,6 +637,8 @@ void sd_lld_init(void)
  * @param[in] config    the architecture-dependent serial driver configuration.
  *                      If this parameter is set to @p NULL then a default
  *                      configuration is used.
+ *
+ * @notapi
  */
 void sd_lld_start(SerialDriver *sdp, const SerialConfig *config)
 {
@@ -507,9 +648,9 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config)
   if (sdp->state == SD_STOP) {
 #if TIVA_SERIAL_USE_UART0
     if (&SD1 == sdp) {
-      SYSCTL->RCGCUART |= (1 << 0);
+      HWREG(SYSCTL_RCGCUART) |= (1 << 0);
 
-      while (!(SYSCTL->PRUART & (1 << 0)))
+      while (!(HWREG(SYSCTL_PRUART) & (1 << 0)))
         ;
 
       nvicEnableVector(TIVA_UART0_NUMBER, TIVA_SERIAL_UART0_PRIORITY);
@@ -517,9 +658,9 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config)
 #endif
 #if TIVA_SERIAL_USE_UART1
     if (&SD2 == sdp) {
-      SYSCTL->RCGCUART |= (1 << 1);
+      HWREG(SYSCTL_RCGCUART) |= (1 << 1);
 
-      while (!(SYSCTL->PRUART & (1 << 1)))
+      while (!(HWREG(SYSCTL_PRUART) & (1 << 1)))
         ;
 
       nvicEnableVector(TIVA_UART1_NUMBER, TIVA_SERIAL_UART1_PRIORITY);
@@ -527,9 +668,9 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config)
 #endif
 #if TIVA_SERIAL_USE_UART2
     if (&SD3 == sdp) {
-      SYSCTL->RCGCUART |= (1 << 2);
+      HWREG(SYSCTL_RCGCUART) |= (1 << 2);
 
-      while (!(SYSCTL->PRUART & (1 << 2)))
+      while (!(HWREG(SYSCTL_PRUART) & (1 << 2)))
         ;
 
       nvicEnableVector(TIVA_UART2_NUMBER, TIVA_SERIAL_UART2_PRIORITY);
@@ -537,9 +678,9 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config)
 #endif
 #if TIVA_SERIAL_USE_UART3
     if (&SD4 == sdp) {
-      SYSCTL->RCGCUART |= (1 << 3);
+      HWREG(SYSCTL_RCGCUART) |= (1 << 3);
 
-      while (!(SYSCTL->PRUART & (1 << 3)))
+      while (!(HWREG(SYSCTL_PRUART) & (1 << 3)))
         ;
 
       nvicEnableVector(TIVA_UART3_NUMBER, TIVA_SERIAL_UART3_PRIORITY);
@@ -547,9 +688,9 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config)
 #endif
 #if TIVA_SERIAL_USE_UART4
     if (&SD5 == sdp) {
-      SYSCTL->RCGCUART |= (1 << 4);
+      HWREG(SYSCTL_RCGCUART) |= (1 << 4);
 
-      while (!(SYSCTL->PRUART & (1 << 4)))
+      while (!(HWREG(SYSCTL_PRUART) & (1 << 4)))
         ;
 
       nvicEnableVector(TIVA_UART4_NUMBER, TIVA_SERIAL_UART4_PRIORITY);
@@ -557,9 +698,9 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config)
 #endif
 #if TIVA_SERIAL_USE_UART5
     if (&SD6 == sdp) {
-      SYSCTL->RCGCUART |= (1 << 5);
+      HWREG(SYSCTL_RCGCUART) |= (1 << 5);
 
-      while (!(SYSCTL->PRUART & (1 << 5)))
+      while (!(HWREG(SYSCTL_PRUART) & (1 << 5)))
         ;
 
       nvicEnableVector(TIVA_UART5_NUMBER, TIVA_SERIAL_UART5_PRIORITY);
@@ -567,9 +708,9 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config)
 #endif
 #if TIVA_SERIAL_USE_UART6
     if (&SD7 == sdp) {
-      SYSCTL->RCGCUART |= (1 << 6);
+      HWREG(SYSCTL_RCGCUART) |= (1 << 6);
 
-      while (!(SYSCTL->PRUART & (1 << 6)))
+      while (!(HWREG(SYSCTL_PRUART) & (1 << 6)))
         ;
 
       nvicEnableVector(TIVA_UART6_NUMBER, TIVA_SERIAL_UART6_PRIORITY);
@@ -577,9 +718,9 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config)
 #endif
 #if TIVA_SERIAL_USE_UART7
     if (&SD8 == sdp) {
-      SYSCTL->RCGCUART |= (1 << 7);
+      HWREG(SYSCTL_RCGCUART) |= (1 << 7);
 
-      while (!(SYSCTL->PRUART & (1 << 7)))
+      while (!(HWREG(SYSCTL_PRUART) & (1 << 7)))
         ;
 
       nvicEnableVector(TIVA_UART7_NUMBER, TIVA_SERIAL_UART7_PRIORITY);
@@ -595,6 +736,8 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config)
  *          interrupt vector.
  *
  * @param[in] sdp       pointer to a @p SerialDriver object
+ *
+ * @notapi
  */
 void sd_lld_stop(SerialDriver *sdp)
 {
@@ -602,56 +745,56 @@ void sd_lld_stop(SerialDriver *sdp)
     uart_deinit(sdp->uart);
 #if TIVA_SERIAL_USE_UART0
     if (&SD1 == sdp) {
-      SYSCTL->RCGCUART &= ~(1 << 0);  /* disable UART0 module */
+      HWREG(SYSCTL_RCGCUART) &= ~(1 << 0);  /* disable UART0 module */
       nvicDisableVector(TIVA_UART0_NUMBER);
       return;
     }
 #endif
 #if TIVA_SERIAL_USE_UART1
     if (&SD2 == sdp) {
-      SYSCTL->RCGCUART &= ~(1 << 1);  /* disable UART1 module */
+      HWREG(SYSCTL_RCGCUART) &= ~(1 << 1);  /* disable UART1 module */
       nvicDisableVector(TIVA_UART1_NUMBER);
       return;
     }
 #endif
 #if TIVA_SERIAL_USE_UART2
     if (&SD3 == sdp) {
-      SYSCTL->RCGCUART &= ~(1 << 2);  /* disable UART2 module */
+      HWREG(SYSCTL_RCGCUART) &= ~(1 << 2);  /* disable UART2 module */
       nvicDisableVector(TIVA_UART2_NUMBER);
       return;
     }
 #endif
 #if TIVA_SERIAL_USE_UART3
     if (&SD4 == sdp) {
-      SYSCTL->RCGCUART &= ~(1 << 3);  /* disable UART3 module */
+      HWREG(SYSCTL_RCGCUART) &= ~(1 << 3);  /* disable UART3 module */
       nvicDisableVector(TIVA_UART3_NUMBER);
       return;
     }
 #endif
 #if TIVA_SERIAL_USE_UART4
     if (&SD5 == sdp) {
-      SYSCTL->RCGCUART &= ~(1 << 4);  /* disable UART4 module */
+      HWREG(SYSCTL_RCGCUART) &= ~(1 << 4);  /* disable UART4 module */
       nvicDisableVector(TIVA_UART4_NUMBER);
       return;
     }
 #endif
 #if TIVA_SERIAL_USE_UART5
     if (&SD6 == sdp) {
-      SYSCTL->RCGCUART &= ~(1 << 5);  /* disable UART5 module */
+      HWREG(SYSCTL_RCGCUART) &= ~(1 << 5);  /* disable UART5 module */
       nvicDisableVector(TIVA_UART5_NUMBER);
       return;
     }
 #endif
 #if TIVA_SERIAL_USE_UART6
     if (&SD7 == sdp) {
-      SYSCTL->RCGCUART &= ~(1 << 6);  /* disable UART6 module */
+      HWREG(SYSCTL_RCGCUART) &= ~(1 << 6);  /* disable UART6 module */
       nvicDisableVector(TIVA_UART6_NUMBER);
       return;
     }
 #endif
 #if TIVA_SERIAL_USE_UART7
     if (&SD8 == sdp) {
-      SYSCTL->RCGCUART &= ~(1 << 7);  /* disable UART7 module */
+      HWREG(SYSCTL_RCGCUART) &= ~(1 << 7);  /* disable UART7 module */
       nvicDisableVector(TIVA_UART7_NUMBER);
       return;
     }

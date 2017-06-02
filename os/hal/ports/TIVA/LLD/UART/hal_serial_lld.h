@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2014..2016 Marco Veeneman
+    Copyright (C) 2014..2017 Marco Veeneman
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 */
 
 /**
- * @file    TIVA/LLD/serial_lld.h
+ * @file    UART/hal_serial_lld.h
  * @brief   Tiva low level serial driver header.
  *
  * @addtogroup SERIAL
@@ -32,162 +32,14 @@
 /*===========================================================================*/
 
 /**
- * @name    FR register bits definitions
- * @{
+ * @brief   Advanced buffering support switch.
+ * @details This constants enables the advanced buffering support in the
+ *          low level driver, the queue buffer is no more part of the
+ *          @p SerialDriver structure, each driver can have a different
+ *          queue size.
  */
+#define SERIAL_ADVANCED_BUFFERING_SUPPORT   TRUE
 
-#define TIVA_FR_CTS         (1 << 0)
-
-#define TIVA_FR_BUSY        (1 << 3)
-
-#define TIVA_FR_RXFE        (1 << 4)
-
-#define TIVA_FR_TXFF        (1 << 5)
-
-#define TIVA_FR_RXFF        (1 << 6)
-
-#define TIVA_FR_TXFE        (1 << 7)
-
-/**
- * @}
- */
-
-/**
- * @name    LCRH register bits definitions
- * @{
- */
-
-#define TIVA_LCRH_BRK       (1 << 0)
-
-#define TIVA_LCRH_PEN       (1 << 1)
-
-#define TIVA_LCRH_EPS       (1 << 2)
-
-#define TIVA_LCRH_STP2      (1 << 3)
-
-#define TIVA_LCRH_FEN       (1 << 4)
-
-#define TIVA_LCRH_WLEN_MASK (3 << 5)
-#define TIVA_LCRH_WLEN_5    (0 << 5)
-#define TIVA_LCRH_WLEN_6    (1 << 5)
-#define TIVA_LCRH_WLEN_7    (2 << 5)
-#define TIVA_LCRH_WLEN_8    (3 << 5)
-
-#define TIVA_LCRH_SPS       (1 << 7)
-
-/**
- * @}
- */
- 
-/**
- * @name    CTL register bits definitions
- * @{
- */
-
-#define TIVA_CTL_UARTEN     (1 << 0)
-
-#define TIVA_CTL_SIREN      (1 << 1)
-
-#define TIVA_CTL_SIRLP      (1 << 2)
-
-#define TIVA_CTL_SMART      (1 << 3)
-
-#define TIVA_CTL_EOT        (1 << 4)
-
-#define TIVA_CTL_HSE        (1 << 5)
-
-#define TIVA_CTL_LBE        (1 << 7)
-
-#define TIVA_CTL_TXE        (1 << 8)
-
-#define TIVA_CTL_RXE        (1 << 9)
-
-#define TIVA_CTL_RTS        (1 << 11)
-
-#define TIVA_CTL_RTSEN      (1 << 14)
-
-#define TIVA_CTL_CTSEN      (1 << 15)
-
-/**
- * @}
- */
-
-/**
- * @name    IFLS register bits definitions
- * @{
- */
-
-#define TIVA_IFLS_TXIFLSEL_MASK     (7 << 0)
-#define TIVA_IFLS_TXIFLSEL_1_8_F    (0 << 0)
-#define TIVA_IFLS_TXIFLSEL_1_4_F    (1 << 0)
-#define TIVA_IFLS_TXIFLSEL_1_2_F    (2 << 0)
-#define TIVA_IFLS_TXIFLSEL_3_4_F    (3 << 0)
-#define TIVA_IFLS_TXIFLSEL_7_8_F    (4 << 0)
-
-#define TIVA_IFLS_RXIFLSEL_MASK     (7 << 3)
-#define TIVA_IFLS_RXIFLSEL_7_8_E    (0 << 3)
-#define TIVA_IFLS_RXIFLSEL_3_4_E    (1 << 3)
-#define TIVA_IFLS_RXIFLSEL_1_2_E    (2 << 3)
-#define TIVA_IFLS_RXIFLSEL_1_4_E    (3 << 3)
-#define TIVA_IFLS_RXIFLSEL_1_8_E    (4 << 3)
-
-/**
- * @}
- */
-
-/**
- * @name    MIS register bits definitions
- * @{
- */
-
-#define TIVA_MIS_CTSMIS             (1 << 1)
-
-#define TIVA_MIS_RXMIS              (1 << 4)
-
-#define TIVA_MIS_TXMIS              (1 << 5)
-
-#define TIVA_MIS_RTMIS              (1 << 6)
-
-#define TIVA_MIS_FEMIS              (1 << 7)
-
-#define TIVA_MIS_PEMIS              (1 << 8)
-
-#define TIVA_MIS_BEMIS              (1 << 9)
-
-#define TIVA_MIS_OEMIS              (1 << 10)
-
-#define TIVA_MIS_9BITMIS            (1 << 12)
-
-/**
- * @}
- */
-
-/**
- * @name    IM register bits definitions
- * @{
- */
-
-#define TIVA_IM_CTSIM               (1 << 1)
-
-#define TIVA_IM_RXIM                (1 << 4)
-
-#define TIVA_IM_TXIM                (1 << 5)
-
-#define TIVA_IM_RTIM                (1 << 6)
-
-#define TIVA_IM_FEIM                (1 << 7)
-
-#define TIVA_IM_PEIM                (1 << 8)
-
-#define TIVA_IM_BEIM                (1 << 9)
-
-#define TIVA_IM_OEIM                (1 << 10)
-
-#define TIVA_IM_9BITIM              (1 << 12)
-
-/**
- * @}
- */
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
 /*===========================================================================*/
@@ -196,7 +48,6 @@
  * @name    Configuration options
  * @{
  */
-
 /**
  * @brief   UART0 driver enable switch.
  * @details If set to @p TRUE the support for UART0 is included.
@@ -326,8 +177,117 @@
 #endif
 
 /**
- * @}
+ * @brief   Input buffer size for UART0.
  */
+#if !defined(TIVA_SERIAL_UART0_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART0_IN_BUF_SIZE   SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART0.
+ */
+#if !defined(TIVA_SERIAL_UART0_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART0_OUT_BUF_SIZE  SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART1.
+ */
+#if !defined(TIVA_SERIAL_UART1_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART1_IN_BUF_SIZE   SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART1.
+ */
+#if !defined(TIVA_SERIAL_UART1_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART1_OUT_BUF_SIZE  SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART2.
+ */
+#if !defined(TIVA_SERIAL_UART2_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART2_IN_BUF_SIZE   SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART2.
+ */
+#if !defined(TIVA_SERIAL_UART2_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART2_OUT_BUF_SIZE  SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART3.
+ */
+#if !defined(TIVA_SERIAL_UART3_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART3_IN_BUF_SIZE   SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART3.
+ */
+#if !defined(TIVA_SERIAL_UART3_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART3_OUT_BUF_SIZE  SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART4.
+ */
+#if !defined(TIVA_SERIAL_UART4_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART4_IN_BUF_SIZE   SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART4.
+ */
+#if !defined(TIVA_SERIAL_UART4_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART4_OUT_BUF_SIZE  SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART5.
+ */
+#if !defined(TIVA_SERIAL_UART5_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART5_IN_BUF_SIZE   SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART5.
+ */
+#if !defined(TIVA_SERIAL_UART5_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART5_OUT_BUF_SIZE  SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART6.
+ */
+#if !defined(TIVA_SERIAL_UART6_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART6_IN_BUF_SIZE   SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART6.
+ */
+#if !defined(TIVA_SERIAL_UART6_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART6_OUT_BUF_SIZE  SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Input buffer size for UART7.
+ */
+#if !defined(TIVA_SERIAL_UART7_IN_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART7_IN_BUF_SIZE   SERIAL_BUFFERS_SIZE
+#endif
+
+/**
+ * @brief   Output buffer size for UART7.
+ */
+#if !defined(TIVA_SERIAL_UART7_OUT_BUF_SIZE) || defined(__DOXYGEN__)
+#define TIVA_SERIAL_UART7_OUT_BUF_SIZE  SERIAL_BUFFERS_SIZE
+#endif
+/** @} */
 
 /*===========================================================================*/
 /* Derived constants and error checks.                                       */
@@ -388,22 +348,32 @@
  * @brief   Tiva Serial Driver configuration structure.
  * @details An instance of this structure must be passed to @p sdStart()
  *          in order to configure and start a serial driver operations.
+ * @note    This structure content is architecture dependent, each driver
+ *          implementation defines its own version and the custom static
+ *          initializers.
  */
 typedef struct {
   /**
    * @brief Bit rate.
    */
-  uint32_t                  sc_speed;
+  uint32_t                  speed;
   /* End of the mandatory fields. */
   /**
-   * @brief Initialization value for the LCRH (Line Control) register.
+   * @brief Initialization value for the CTL register.
    */
-  uint32_t                  sc_lcrh;
+  uint16_t                  ctl;
   /**
-   * @brief Initialization value for the IFLS (Interrupt FIFO Level Select)
-   * register.
+   * @brief Initialization value for the LCRH register.
    */
-  uint32_t                  sc_ifls;
+  uint8_t                   lcrh;
+  /**
+   * @brief Initialization value for the IFLS register.
+   */
+  uint8_t                   ifls;
+  /**
+   * @brief Initialization value for the CC register.
+   */
+  uint8_t                   cc;
 } SerialConfig;
 
 /**
@@ -417,13 +387,9 @@ typedef struct {
   input_queue_t             iqueue;                                         \
   /* Output queue.*/                                                        \
   output_queue_t            oqueue;                                         \
-  /* Input circular buffer.*/                                               \
-  uint8_t                   ib[SERIAL_BUFFERS_SIZE];                        \
-  /* Output circular buffer.*/                                              \
-  uint8_t                   ob[SERIAL_BUFFERS_SIZE];                        \
   /* End of the mandatory fields.*/                                         \
   /* Pointer to the USART registers block.*/                                \
-  UART_TypeDef              *uart;
+  uint32_t                  uart;
 
 /*===========================================================================*/
 /* Driver macros.                                                            */

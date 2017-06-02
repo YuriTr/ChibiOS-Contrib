@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2014..2016 Marco Veeneman
+    Copyright (C) 2014..2017 Marco Veeneman
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -30,15 +30,15 @@
 /*
  * HAL driver system settings.
  */
-#define TIVA_OSCSRC                         TIVA_RCC2_OSCSRC2_MOSC
+#define TIVA_OSCSRC                         SYSCTL_RCC2_OSCSRC2_MO
 #define TIVA_MOSC_ENABLE                    TRUE
 #define TIVA_DIV400_VALUE                   1
 #define TIVA_SYSDIV_VALUE                   2
 #define TIVA_USESYSDIV_ENABLE               FALSE
 #define TIVA_SYSDIV2LSB_ENABLE              FALSE
 #define TIVA_BYPASS_VALUE                   0
-#define TIVA_PWM_FIELDS                     (TIVA_RCC_USEPWMDIV |            \
-                                             TIVA_RCC_PWMDIV_8)
+#define TIVA_PWM_FIELDS                     (SYSCTL_RCC_USEPWMDIV |            \
+                                             SYSCTL_RCC_PWMDIV_8)
 
 /*
  * GPIO driver system settings.

@@ -15,15 +15,15 @@
 */
 
 /**
- * @file    fsmc.h
+ * @file    hal_fsmc.h
  * @brief   FSMC Driver subsystem low level driver header.
  *
  * @addtogroup FSMC
  * @{
  */
 
-#ifndef _FSMC_H_
-#define _FSMC_H_
+#ifndef HAL_FSMC_H_
+#define HAL_FSMC_H_
 
 #if (HAL_USE_FSMC == TRUE) || defined(__DOXYGEN__)
 
@@ -177,10 +177,15 @@ typedef struct {
 /**
  * @brief   PCR register
  */
-#define  FSMC_PCR_PWAITEN         ((uint32_t)0x00000002)
-#define  FSMC_PCR_PBKEN           ((uint32_t)0x00000004)
-#define  FSMC_PCR_PTYP            ((uint32_t)0x00000008)
-#define  FSMC_PCR_ECCEN           ((uint32_t)0x00000040)
+#define  FSMC_PCR_PWAITEN         ((uint32_t)1 << 1)
+#define  FSMC_PCR_PBKEN           ((uint32_t)1 << 2)
+#define  FSMC_PCR_PTYP            ((uint32_t)1 << 3)
+#define  FSMC_PCR_PWID_8          ((uint32_t)0 << 4)
+#define  FSMC_PCR_PWID_16         ((uint32_t)1 << 4)
+#define  FSMC_PCR_PWID_RESERVED1  ((uint32_t)2 << 4)
+#define  FSMC_PCR_PWID_RESERVED2  ((uint32_t)3 << 4)
+#define  FSMC_PCR_PWID_MASK       ((uint32_t)3 << 4)
+#define  FSMC_PCR_ECCEN           ((uint32_t)1 << 6)
 #define  FSMC_PCR_PTYP_PCCARD     0
 #define  FSMC_PCR_PTYP_NAND       FSMC_PCR_PTYP
 
@@ -229,6 +234,9 @@ typedef struct {
      defined(STM32F429xx) || defined(STM32F439xx) || \
      defined(STM32F7))
 #define  FSMC_BCR_CCLKEN          ((uint32_t)1 << 20)
+#endif
+#if (defined(STM32F7))
+#define FSMC_BCR_WFDIS            ((uint32_t)1 << 21)
 #endif
 
 /*===========================================================================*/
@@ -335,6 +343,6 @@ extern "C" {
 
 #endif /* HAL_USE_FSMC */
 
-#endif /* _FSMC_H_ */
+#endif /* HAL_FSMC_H_ */
 
 /** @} */

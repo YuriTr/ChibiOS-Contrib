@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2014..2016 Marco Veeneman
+    Copyright (C) 2014..2017 Marco Veeneman
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 
 /**
- * @file    TIVA/wdg_lld.h
+ * @file    WDT/hal_wdg_lld.h
  * @brief   WDG Driver subsystem low level driver header.
  *
  * @addtogroup WDG
@@ -31,23 +31,6 @@
 /*===========================================================================*/
 /* Driver constants.                                                         */
 /*===========================================================================*/
-
-#define LOCK_UNLOCK        0x1ACCE551U
-#define LOCK_LOCK          0x00000000U
-
-#define LOCK_IS_UNLOCKED   0U
-#define LOCK_IS_LOCKED     1U
-
-#define TEST_STALL         (1 << 8)
-
-#define MIS_WDTMIS         (1 << 0)
-#define RIS_WDTRIS         (1 << 0)
-#define ICR_WDTICR         (1 << 0)
-
-#define CTL_INTEN          (1 << 0)
-#define CTL_RESEN          (1 << 1)
-#define CTL_INTTYPE        (1 << 2)
-#define CTL_WRC            (1 << 31)
 
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
@@ -146,7 +129,7 @@ struct WDGDriver
   /**
    * @brief   Pointer to the WDT registers block.
    */
-  WDT_TypeDef               *wdt;
+  uint32_t                  wdt;
 };
 
 /*===========================================================================*/

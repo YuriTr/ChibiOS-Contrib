@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2014..2016 Marco Veeneman
+    Copyright (C) 2014..2017 Marco Veeneman
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@
  * HAL driver system settings.
  */
 #define TIVA_MOSC_SINGLE_ENDED              FALSE
-#define TIVA_RSCLKCFG_OSCSRC                RSCLKCFG_OSCSRC_MOSC
+#define TIVA_RSCLKCFG_OSCSRC                SYSCTL_RSCLKCFG_OSCSRC_MOSC
 
 /*
  * GPT driver system settings.

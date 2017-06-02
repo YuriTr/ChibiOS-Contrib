@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2014..2016 Marco Veeneman
+    Copyright (C) 2014..2017 Marco Veeneman
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -13,6 +13,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+
+/**
+ * @file    uDMA/tiva_udma.c
+ * @brief   DMA helper driver code.
+ *
+ * @addtogroup TIVA_DMA
+ * @{
+ */
 
 #include "hal.h"
 
@@ -75,8 +83,8 @@ OSAL_IRQ_HANDLER(TIVA_UDMA_ERR_HANDLER)
 
   /* TODO Do we need to halt the system on a DMA error?*/
 
-  if (UDMA->ERRCLR) {
-    UDMA->ERRCLR = 1;
+  if (HWREG(UDMA_ERRCLR)) {
+    HWREG(UDMA_ERRCLR) = 1;
   }
 
   OSAL_IRQ_EPILOGUE();
@@ -96,18 +104,18 @@ void udmaInit(void)
   udma_channel_mask = 0;
 
   /* Enable UDMA module.*/
-  SYSCTL->RCGCDMA = 1;
-  while (!(SYSCTL->PRDMA & (1 << 0)))
+  HWREG(SYSCTL_RCGCDMA) = 1;
+  while (!(HWREG(SYSCTL_PRDMA) & (1 << 0)))
     ;
 
   nvicEnableVector(TIVA_UDMA_ERR_NUMBER, TIVA_UDMA_ERR_IRQ_PRIORITY);
   nvicEnableVector(TIVA_UDMA_SW_NUMBER, TIVA_UDMA_SW_IRQ_PRIORITY);
 
   /* Enable UDMA controller.*/
-  UDMA->CFG = 1;
+  HWREG(UDMA_CFG) = UDMA_CFG_MASTEN;
 
   /* Set address of control table.*/
-  UDMA->CTLBASE = (uint32_t)udmaControlTable.primary;
+  HWREG(UDMA_CTLBASE) = (uint32_t)udmaControlTable.primary;
 }
 
 /**
@@ -139,3 +147,5 @@ void udmaChannelRelease(uint8_t dmach)
 }
 
 #endif
+
+/** @} */
